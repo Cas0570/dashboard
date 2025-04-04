@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getLoggedInUser } from "@/lib/server/appwrite";
 
 export default async function middleware(req: NextRequest) {
   // Define the protected routes and public auth routes
@@ -10,15 +11,15 @@ export default async function middleware(req: NextRequest) {
                           !req.nextUrl.pathname.startsWith('/admin/signup');
   
   // Check for auth session
-  const hasSession = req.cookies.has("user_session");
+  const user = await getLoggedInUser();
   
   // If accessing a protected route without a session, redirect to signin
-  if (isProtectedRoute && !hasSession) {
+  if (isProtectedRoute && !user) {
     return NextResponse.redirect(new URL('/admin/signin', req.url));
   }
   
   // If accessing auth routes with a session, redirect to dashboard
-  if (isAdminAuthRoute && hasSession) {
+  if (isAdminAuthRoute && user) {
     return NextResponse.redirect(new URL('/', req.url));
   }
   
