@@ -1,14 +1,56 @@
 "use client";
+import React, { useState } from "react";
 import Checkbox from "@/components/form/input/Checkbox";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
-import React, { useState } from "react";
+import Button from "@/components/ui/button/Button";
+import { signUpWithEmail } from "@/lib/server/auth-actions";
+import { useRouter } from "next/navigation";
+import Alert from "@/components/ui/alert/Alert";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    if (!isChecked) {
+      setErrorMessage("Please agree to the Terms and Conditions");
+      return;
+    }
+    
+    setIsLoading(true);
+    setErrorMessage("");
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const fname = formData.get("fname") as string;
+    const lname = formData.get("lname") as string;
+    const name = `${fname} ${lname}`.trim();
+
+    try {
+      const result = await signUpWithEmail(email, password, name);
+      
+      if (result.success) {
+        router.push("/"); // Redirect to dashboard
+      } else {
+        setErrorMessage(result.message);
+      }
+    } catch (error) {
+      setErrorMessage("An unexpected error occurred. Please try again.");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 lg:w-1/2 w-full overflow-y-auto no-scrollbar">
       <div className="w-full max-w-md sm:pt-10 mx-auto mb-5">
@@ -26,7 +68,7 @@ export default function SignUpForm() {
             Sign Up
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Enter your email and password to sign up!
+            Enter your details to create a new account!
           </p>
           <div>
             <div className="relative py-5">
@@ -35,7 +77,17 @@ export default function SignUpForm() {
               </div>
               <div className="relative flex justify-center text-sm" />
             </div>
-            <form>
+            {errorMessage && (
+              <div className="mb-4">
+                <Alert
+                  variant="error"
+                  title={errorMessage}
+                  message=""
+                  showLink={false}
+                />
+              </div>
+            )}
+            <form onSubmit={handleSubmit}>
               <div className="space-y-5">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   {/* <!-- First Name --> */}
@@ -48,6 +100,7 @@ export default function SignUpForm() {
                       id="fname"
                       name="fname"
                       placeholder="Enter your first name"
+                      required
                     />
                   </div>
                   {/* <!-- Last Name --> */}
@@ -60,6 +113,7 @@ export default function SignUpForm() {
                       id="lname"
                       name="lname"
                       placeholder="Enter your last name"
+                      required
                     />
                   </div>
                 </div>
@@ -73,6 +127,7 @@ export default function SignUpForm() {
                     id="email"
                     name="email"
                     placeholder="Enter your email"
+                    required
                   />
                 </div>
                 {/* <!-- Password --> */}
@@ -84,6 +139,9 @@ export default function SignUpForm() {
                     <Input
                       placeholder="Enter your password"
                       type={showPassword ? "text" : "password"}
+                      name="password"
+                      min="8"
+                      required
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -117,9 +175,13 @@ export default function SignUpForm() {
                 </div>
                 {/* <!-- Button --> */}
                 <div>
-                  <button className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600">
-                    Sign Up
-                  </button>
+                  <Button 
+                    className="w-full" 
+                    size="sm"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Creating account..." : "Sign Up"}
+                  </Button>
                 </div>
               </div>
             </form>
@@ -128,7 +190,7 @@ export default function SignUpForm() {
               <p className="text-sm font-normal text-center text-gray-700 dark:text-gray-400 sm:text-start">
                 Already have an account? {""}
                 <Link
-                  href="/signin"
+                  href="/admin/signin"
                   className="text-brand-500 hover:text-brand-600 dark:text-brand-400"
                 >
                   Sign In
