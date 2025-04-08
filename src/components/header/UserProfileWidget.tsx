@@ -78,6 +78,7 @@ export default function UserProfileWidget({ user, onClose }: UserProfileWidgetPr
             onItemClick={onClose}
             tag="a"
             href="https://cloud.appwrite.io/console/project-67efe659000a3f5b3ac5/overview/platforms"
+            target="_blank"
             className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
           >
             <svg 
@@ -117,6 +118,7 @@ export default function UserProfileWidget({ user, onClose }: UserProfileWidgetPr
             onItemClick={onClose}
             tag="a"
             href="#"
+            target="_blank"
             className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
           >
             <svg
