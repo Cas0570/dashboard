@@ -1,8 +1,8 @@
 "use client";
-import Image from "next/image";
 import React, { useState, useEffect } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import UserProfileWidget from "./UserProfileWidget";
+import InitialAvatar from "../ui/avatar/InitialAvatar";
 
 type User = {
   $id: string;
@@ -56,12 +56,8 @@ export default function UserDropdown() {
         disabled={isLoading}
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <Image
-            width={44}
-            height={44}
-            src="/images/user/owner.jpg"
-            alt="User"
-          />
+          <InitialAvatar name={user?.name || ""} size={44} />
+          {/* <InitialAvatar name={user?.name || ""} imageUrl="/images/user/owner.jpg" size={44} /> */}
         </span>
 
         <span className="block mr-1 font-medium text-theme-sm">
