@@ -30,7 +30,7 @@ export default function SignInForm() {
       const result = await signInWithEmail(email, password);
       
       if (result.success) {
-        router.push("/"); // Redirect to dashboard
+        router.push("/admin/dashboard"); // Redirect to dashboard
       } else {
         setErrorMessage(result.message);
       }

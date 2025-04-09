@@ -9,12 +9,14 @@ import Button from "@/components/ui/button/Button";
 import { signUpWithEmail } from "@/lib/server/auth-actions";
 import { useRouter } from "next/navigation";
 import Alert from "@/components/ui/alert/Alert";
+import PhoneInput from "@/components/form/input/PhoneInput";
 
 export default function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [, setPhoneNumber] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -36,10 +38,13 @@ export default function SignUpForm() {
     const name = `${fname} ${lname}`.trim();
 
     try {
+      // You could save the phone number in your user data here if needed
+      // formData.append("phone", phoneNumber);
+      
       const result = await signUpWithEmail(email, password, name);
       
       if (result.success) {
-        router.push("/"); // Redirect to dashboard
+        router.push("/admin/dashboard"); // Redirect to dashboard
       } else {
         setErrorMessage(result.message);
       }
@@ -49,6 +54,10 @@ export default function SignUpForm() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePhoneChange = (value: string) => {
+    setPhoneNumber(value);
   };
 
   return (
@@ -127,6 +136,19 @@ export default function SignUpForm() {
                     id="email"
                     name="email"
                     placeholder="Enter your email"
+                    required
+                  />
+                </div>
+                {/* <!-- Phone --> */}
+                <div>
+                  <Label>
+                    Phone<span className="text-error-500">*</span>
+                  </Label>
+                  <PhoneInput
+                    placeholder="Enter phone number"
+                    onChange={handlePhoneChange}
+                    defaultCountry="US"
+                    selectPosition="start"
                     required
                   />
                 </div>
