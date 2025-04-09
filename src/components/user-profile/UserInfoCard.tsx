@@ -1,7 +1,33 @@
 "use client";
 import React from "react";
+import { useUserData, User } from "@/lib/hooks/useUserData";
 
-export default function UserInfoCard() {
+interface UserInfoCardProps {
+  userData?: User | null;
+}
+
+export default function UserInfoCard({ userData }: UserInfoCardProps) {
+  // Always call the hook, but only use its data if userData prop is not provided
+  const { user: hookUser, isLoading } = useUserData();
+  
+  // Use the prop if provided, otherwise use the hook data
+  const user = userData || hookUser;
+  
+  if (!userData && isLoading) {
+    return (
+      <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
+              Personal Information
+            </h4>
+            <p className="text-gray-500 dark:text-gray-400">Loading user information...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -16,7 +42,7 @@ export default function UserInfoCard() {
                 First Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
+                {user?.name.split(' ')[0] || "Guest"}
               </p>
             </div>
 
@@ -25,7 +51,7 @@ export default function UserInfoCard() {
                 Last Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
+                {user?.name.split(' ').slice(1).join(' ') || ""}
               </p>
             </div>
 
@@ -34,7 +60,7 @@ export default function UserInfoCard() {
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+                {user?.email || "randomuser@example.com"}
               </p>
             </div>
 
@@ -44,15 +70,6 @@ export default function UserInfoCard() {
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 +09 363 398 46
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Bio
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Team Manager
               </p>
             </div>
           </div>
